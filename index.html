@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Diagnóstico Mobile</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;padding:20px;
+ font-family:Arial,sans-serif;
+ background:#101827;color:#fff;
+}
+.container{max-width:520px;margin:auto}
+h1{color:#48a6ff;text-align:center}
+.sub{text-align:center;color:#aab5c5}
+.card{
+ background:#1c293b;padding:20px;
+ border-radius:15px;margin-top:20px;
+ border:1px solid #34445a;
+}
+label{display:block;margin:15px 0 7px}
+input,select{
+ width:100%;padding:13px;
+ border-radius:9px;border:1px solid #52647c;
+ background:#101827;color:white;font-size:16px;
+}
+button{
+ width:100%;padding:15px;margin-top:20px;
+ background:#1685ed;color:white;border:0;
+ border-radius:10px;font-size:17px;font-weight:bold;
+}
+.result{
+ display:none;background:#183b32;
+ border:1px solid #318b69;padding:17px;
+ border-radius:12px;margin-top:20px;
+ line-height:1.6;
+}
+.small{color:#aab5c5;font-size:13px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🔧 Diagnóstico Mobile</h1>
+<p class="sub">Assistente inteligente de diagnóstico de celulares</p>
+
+<div class="card">
+<h2>Vamos identificar o defeito</h2>
+<p class="small">Responda às perguntas para receber uma análise preliminar.</p>
+
+<label>Marca do aparelho</label>
+<select id="marca">
+<option>Samsung</option>
+<option>Motorola</option>
+<option>Xiaomi</option>
+<option>Apple iPhone</option>
+<option>Outra</option>
+</select>
+
+<label>Modelo do celular</label>
+<input id="modelo" placeholder="Ex: Galaxy A15">
+
+<label>Qual é o problema?</label>
+<select id="problema">
+<option value="naocarrega">Não carrega</option>
+<option value="intermitente">Carrega e para</option>
+<option value="lento">Carrega muito devagar</option>
+<option value="naoliga">Não liga</option>
+</select>
+
+<label>O celular sofreu alguma queda?</label>
+<select id="queda">
+<option value="nao">Não</option>
+<option value="sim">Sim</option>
+</select>
+
+<label>Teve contato com água ou umidade?</label>
+<select id="agua">
+<option value="nao">Não</option>
+<option value="sim">Sim</option>
+</select>
+
+<label>Você já testou outro cabo e carregador compatíveis?</label>
+<select id="carregador">
+<option value="sim">Sim, já testei</option>
+<option value="nao">Não testei</option>
+</select>
+
+<label>O aparelho apresenta algum sinal ao conectar?</label>
+<select id="sinal">
+<option value="nenhum">Nenhum sinal</option>
+<option value="pisca">Aparece e desaparece o símbolo de carga</option>
+<option value="vibra">Vibra ou acende a tela</option>
+<option value="normal">Mostra carregamento normalmente</option>
+</select>
+
+<button onclick="diagnosticar()">ANALISAR DEFEITO</button>
+</div>
+
+<div class="result" id="resultado"></div>
+
+<p class="small" style="text-align:center;margin-top:25px">
+Diagnóstico preliminar. A confirmação depende de testes técnicos presenciais.
+</p>
+</div>
+
+<script>
+function diagnosticar(){
+ const problema=document.getElementById("problema").value;
+ const queda=document.getElementById("queda").value;
+ const agua=document.getElementById("agua").value;
+ const carregador=document.getElementById("carregador").value;
+ const sinal=document.getElementById("sinal").value;
+ const marca=document.getElementById("marca").value;
+ const modelo=document.getElementById("modelo").value.trim();
+
+ let causas=[];
+ let testes=[];
+ let alerta="";
+
+ if(agua==="sim"){
+ alerta="ATENÇÃO: possível contato com líquido. Não conecte o carregador nem tente ligar o aparelho. Procure assistência técnica.";
+ causas.push("Possível oxidação ou dano por líquido");
+ }else if(problema==="naocarrega" || problema==="intermitente" || problema==="lento"){
+ if(carregador==="nao"){
+ causas.push("Cabo ou carregador com defeito");
+ testes.push("Testar com cabo e fonte compatíveis e comprovadamente funcionais");
+ }
+ if(sinal==="pisca" || problema==="intermitente"){
+ causas.push("Possível mau contato na entrada de carga");
+ testes.push("Inspecionar visualmente o conector e verificar a estabilidade da conexão");
+ }
+ if(queda==="sim"){
+ causas.push("Possível dano físico no conector ou circuito de carga");
+ testes.push("Inspecionar conector, placa de carga e conexões internas");
+ }
+ if(causas.length===0){
+ causas.push("Possível falha no conector de carga");
+ causas.push("Possível falha na bateria ou circuito de alimentação");
+ testes.push("Inspecionar o conector e realizar testes elétricos adequados");
+ }
+ }else if(problema==="naoliga"){
+ causas.push("Possível bateria descarregada ou defeituosa");
+ causas.push("Possível falha no botão de energia ou circuito de alimentação");
+ testes.push("Verificar alimentação, bateria e botão power com ferramentas apropriadas");
+ if(queda==="sim") causas.push("Possível dano interno provocado pela queda");
+ }else{
+ causas.push("Necessário investigar o comportamento do aparelho");
+ }
+
+ if(sinal==="nenhum") testes.push("Verificar se existe consumo de corrente ao conectar uma fonte de bancada, por técnico habilitado");
+ if(testes.length===0) testes.push("Realizar inspeção técnica e testes específicos antes de substituir peças");
+
+ let nivel=agua==="sim" || queda==="sim" ? "Atenção especial" : "Investigação necessária";
+
+ const resultado=document.getElementById("resultado");
+ resultado.style.display="block";
+ resultado.innerHTML=`
+ <h2>📋 Resultado da análise</h2>
+ <p><b>Aparelho:</b> ${marca} ${modelo || "Não informado"}</p>
+ <p><b>Prioridade:</b> ${nivel}</p>
+ <h3>Possíveis causas</h3>
+ <ul>${causas.map(c=>"<li>"+c+"</li>").join("")}</ul>
+ <h3>Testes recomendados</h3>
+ <ul>${testes.map(t=>"<li>"+t+"</li>").join("")}</ul>
+ ${alerta ? "<p><b>"+alerta+"</b></p>" : ""}
+ <p class="small">Esta análise não confirma o componente defeituoso. Não substitua peças sem testes.</p>
+ <button onclick="window.print()">IMPRIMIR RELATÓRIO</button>
+ `;
+ resultado.scrollIntoView({behavior:"smooth"});
+}
+</script>
+</body>
+  </html>
+  
